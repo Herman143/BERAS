@@ -1,0 +1,614 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HitungBeras - Kalkulator Karung & Sisa Beras 25kg</title>
+    <!-- Tailwind CSS Standalone Fallback & Custom Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fallback offline font stack */
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8fafc;
+        }
+        .tab-active {
+            border-bottom: 3px solid #16a34a;
+            color: #16a34a;
+            font-weight: 700;
+        }
+        /* Custom Inline SVG Helpers */
+        .icon-svg {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            stroke-width: 0;
+            stroke: currentColor;
+            fill: currentColor;
+            vertical-align: -0.125em;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="bg-emerald-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white text-emerald-700 p-2.5 rounded-xl shadow-md flex items-center justify-center">
+                    <!-- Wheat Icon SVG -->
+                    <svg class="w-6 h-6 fill-emerald-700" viewBox="0 0 24 24"><path d="M7 22h2v-3.05c3.54-.64 6.32-3.42 6.96-6.95H19v-2h-3.04c-.64-3.54-3.42-6.32-6.96-6.96V2H7v3.04C3.46 5.68.68 8.46.04 12H0v2h3.04c.64 3.53 3.42 6.31 6.96 6.95V22zM12 12c0 2.76-2.24 5-5 5s-5-2.24-5-5 2.24-5 5-5 5 2.24 5 5z"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold leading-tight">HitungBeras</h1>
+                    <p class="text-xs text-emerald-100">Kalkulator Karung & Sisa Beras (25kg)</p>
+                </div>
+            </div>
+            <button onclick="resetCurrentTab()" class="text-xs bg-emerald-800 hover:bg-emerald-900 transition px-3 py-2 rounded-lg flex items-center gap-1.5 border border-emerald-600">
+                <!-- Rotate Left Icon SVG -->
+                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+                Reset
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- Navigation Tabs -->
+        <div class="flex border-b border-slate-200 mb-6 bg-white rounded-t-xl shadow-sm px-2 overflow-x-auto">
+            <button id="tab1-btn" onclick="switchTab('tab1')" class="tab-active py-3 px-4 text-sm sm:text-base transition flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c.83 0 1.5.67 1.5 1.5S12.83 9 12 9s-1.5-.67-1.5-1.5S11.17 6 12 6zm0 12c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
+                Konversi Karung & Sisa
+            </button>
+            <button id="tab4-btn" onclick="switchTab('tab4')" class="text-slate-500 hover:text-emerald-600 py-3 px-4 text-sm sm:text-base transition flex items-center gap-2 whitespace-nowrap">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M4 10h16v2H4zm0-4h16v2H4zm0 8h16v2H4zm0 4h16v2H4z"/></svg>
+                Input Batch / Timbangan
+            </button>
+        </div>
+
+        <!-- TAB 1: Hitung Karung & Sisa Beras -->
+        <div id="tab1" class="tab-content block">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <!-- Form Input -->
+                <div class="md:col-span-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 fill-emerald-600" viewBox="0 0 24 24"><path d="M12 3a1 1 0 0 0-1 1v1.07A7.002 7.002 0 0 0 5 12a7 7 0 0 0 14 0 7.002 7.002 0 0 0-6-6.93V4a1 1 0 0 0-1-1zm0 4a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"/></svg>
+                        Masukkan Total Beras
+                    </h2>
+
+                    <!-- Ukuran Karung Preset/Custom -->
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-2">Ukuran Per Karung (kg)</label>
+                        <div class="grid grid-cols-4 gap-2">
+                            <button onclick="setBagSize(5)" class="bag-size-btn border border-slate-200 py-2 rounded-lg text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition" data-size="5">5 kg</button>
+                            <button onclick="setBagSize(10)" class="bag-size-btn border border-slate-200 py-2 rounded-lg text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition" data-size="10">10 kg</button>
+                            <button onclick="setBagSize(25)" class="bag-size-btn border-2 border-emerald-600 bg-emerald-50 text-emerald-700 py-2 rounded-lg text-sm font-bold hover:border-emerald-500 transition" data-size="25">25 kg ⭐</button>
+                            <button onclick="setBagSize(50)" class="bag-size-btn border border-slate-200 py-2 rounded-lg text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition" data-size="50">50 kg</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="totalBeras" class="block text-sm font-semibold text-slate-700 mb-1">Total Berat Beras (kg)</label>
+                        <div class="relative">
+                            <input type="text" id="totalBeras" inputmode="decimal" pattern="[0-9,*]*" placeholder="Contoh: 1.250,5" oninput="handleFormattedInput(this); calculateBeras()"
+                                class="w-full text-lg pl-4 pr-12 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                            <span class="absolute right-4 top-3.5 text-slate-400 font-semibold">kg</span>
+                        </div>
+                    </div>
+
+                    <!-- Quick Add Buttons -->
+                    <div>
+                        <span class="text-xs text-slate-500 block mb-1">Tambah Cepat Berat:</span>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="addWeight(10)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg transition">+10 kg</button>
+                            <button onclick="addWeight(25)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg transition">+25 kg</button>
+                            <button onclick="addWeight(50)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg transition">+50 kg</button>
+                            <button onclick="addWeight(100)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg transition">+100 kg</button>
+                            <button onclick="addWeight(1000)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg transition">+1.000 kg</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Card -->
+                <div class="md:col-span-6 flex flex-col gap-4">
+                    <div class="bg-gradient-to-br from-emerald-600 to-teal-800 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden flex-grow flex flex-col justify-between">
+                        <div>
+                            <span class="text-xs font-semibold tracking-wider uppercase bg-emerald-500/30 px-3 py-1 rounded-full border border-emerald-400/30 inline-block mb-3">Hasil Perhitungan</span>
+                            
+                            <div class="grid grid-cols-2 gap-4 my-2">
+                                <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                                    <p class="text-xs text-emerald-100 font-medium">Jumlah Karung Utuh</p>
+                                    <p class="text-3xl font-extrabold mt-1" id="resJumlahKarung">0 <span class="text-sm font-normal">karung</span></p>
+                                    <p class="text-[11px] text-emerald-200 mt-1" id="resDetailKarung">(0 kg per karung)</p>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-md p-4 rounded-xl border border-white/10">
+                                    <p class="text-xs text-emerald-100 font-medium">Sisa Beras</p>
+                                    <p class="text-3xl font-extrabold text-amber-300 mt-1" id="resSisaBeras">0 <span class="text-sm font-normal text-white">kg</span></p>
+                                    <p class="text-[11px] text-emerald-200 mt-1" id="resSisaGram">(0 gram)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-white/20 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-emerald-100">Total Beras Masuk:</span>
+                                <span class="font-bold" id="resTotalBeras">0 kg</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-emerald-100">Beras Terkemas:</span>
+                                <span class="font-bold" id="resBerasTerkemas">0 kg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Simpan Ke Riwayat Button -->
+                    <button onclick="saveHistoryTab1()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 rounded-xl shadow-sm transition flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                        Simpan ke Riwayat
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: Input Batch / Timbangan -->
+        <div id="tab4" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-6 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                    <h2 class="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+                        <svg class="w-5 h-5 fill-emerald-600" viewBox="0 0 24 24"><path d="M4 11h16v2H4zm0-4h16v2H4zm0 8h16v2H4z"/></svg>
+                        Hitung Batch Timbangan
+                    </h2>
+                    <p class="text-xs text-slate-500 mb-4">Input angka timbangan satu per satu atau tempel (paste) daftar timbangan sekaligus.</p>
+
+                    <!-- Input Cepat Single Timbangan / Quick Add List -->
+                    <div class="mb-4">
+                        <label for="singleBatchInput" class="block text-sm font-semibold text-slate-700 mb-1">Tambah Timbangan Baru (kg)</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="singleBatchInput" inputmode="decimal" pattern="[0-9,*]*" placeholder="Contoh: 50,5" onkeydown="if(event.key==='Enter'){addSingleBatchItem();}" oninput="handleFormattedInput(this)"
+                                class="w-full text-base px-4 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+                            <button onclick="addSingleBatchItem()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap">
+                                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                Tambah
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Textarea untuk Paste Massal -->
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <label for="batchInput" class="block text-xs font-semibold text-slate-600 uppercase">Atau Paste Banyak Data Sekaligus</label>
+                            <button onclick="togglePasteArea()" class="text-xs text-emerald-600 font-semibold hover:underline" id="togglePasteBtn">Tampilkan Textarea</button>
+                        </div>
+                        <div id="pasteAreaWrapper" class="hidden">
+                            <textarea id="batchInput" inputmode="decimal" rows="3" placeholder="Paste angka pisahkan dengan koma atau baris baru (contoh: 50,5, 48.2, 52)" oninput="calculateBatchFromTextarea()"
+                                class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition font-mono text-sm"></textarea>
+                            <button onclick="applyBatchTextarea()" class="mt-2 text-xs bg-slate-800 hover:bg-slate-900 text-white py-1.5 px-3 rounded-lg transition w-full">
+                                Impor Data Dari Textarea
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- List Timbangan yang dimasukkan -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-slate-600 uppercase">Daftar Item Timbangan (<span id="batchCountBadge">0</span>)</span>
+                            <button onclick="clearBatchItems()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold">Reset Daftar</button>
+                        </div>
+                        <div id="batchItemsList" class="max-h-52 overflow-y-auto space-y-1.5 p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                            <p class="text-slate-400 text-xs italic text-center py-6">Belum ada item timbangan ditambahkan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:col-span-6 bg-slate-900 text-white p-6 rounded-2xl shadow-lg flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-semibold tracking-wider uppercase bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full border border-emerald-500/30 inline-block mb-4">Hasil Kalkulasi Batch</span>
+                        
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
+                                    <span class="text-xs text-slate-400 block">Total Ditimbang:</span>
+                                    <span class="text-xl font-bold text-emerald-400" id="batchResTotal">0 kg</span>
+                                </div>
+                                <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
+                                    <span class="text-xs text-slate-400 block">Ukuran Target:</span>
+                                    <select id="batchUkuranKarung" onchange="calculateBatch()" class="bg-slate-700 text-white text-xs rounded px-2 py-1 mt-1 border border-slate-600 focus:outline-none w-full">
+                                        <option value="5">5 kg</option>
+                                        <option value="10">10 kg</option>
+                                        <option value="25" selected>25 kg</option>
+                                        <option value="50">50 kg</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="p-4 bg-emerald-900/40 rounded-xl border border-emerald-500/30 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-slate-200">Karung Utuh Terisi:</span>
+                                    <span class="text-2xl font-extrabold text-white" id="batchResKarung">0 Karung</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-emerald-500/20">
+                                    <span class="text-sm text-slate-200">Sisa Belum Terkemas:</span>
+                                    <span class="text-lg font-bold text-amber-300" id="batchResSisa">0 kg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 mt-6">
+                        <button onclick="sendBatchToMainTab()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2 text-sm">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M16 13v-1H4v-2h12V9l5 4-5 4z"/></svg>
+                            Transfer Ke Kalkulator Utama
+                        </button>
+                        <button onclick="saveHistoryBatch()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2 text-sm border border-slate-700">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+                            Simpan Hasil Batch
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Riwayat Perhitungan -->
+        <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-4 h-4 fill-emerald-600" viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+                    Riwayat Perhitungan
+                </h3>
+                <button onclick="clearHistory()" class="text-xs text-rose-600 hover:text-rose-800 font-semibold transition">
+                    Hapus Semua
+                </button>
+            </div>
+
+            <div id="historyList" class="space-y-2 text-sm max-h-48 overflow-y-auto pr-1">
+                <p class="text-slate-400 text-xs italic text-center py-4">Belum ada riwayat tersimpan.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-12 py-4">
+        <div class="max-w-4xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>© 2026 HitungBeras - Alat Bantu Hitung Karung & Sisa Beras Praktis.</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 transition-opacity duration-300 opacity-0 pointer-events-none z-50 text-sm">
+        <svg class="w-5 h-5 fill-emerald-400" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <span id="toastMsg">Pesan Toast</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // State Global
+        let currentBagSize = 25; // Default 25kg
+        let historyData = JSON.parse(localStorage.getItem('hitungberas_history') || '[]');
+        let batchItems = []; // Array untuk menyimpan item timbangan batch
+
+        // Helper Format Ribuan Indonesia (cth: 1.250,5)
+        function formatNumberId(num, decimals = 2) {
+            if (isNaN(num) || num === null) return "0";
+            return new Intl.NumberFormat('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: decimals
+            }).format(num);
+        }
+
+        // Parse formatted ID string ke angka desimal Javascript
+        function parseFormattedNumber(valStr) {
+            if (!valStr) return 0;
+            const sanitized = valStr.toString().replace(/\./g, '').replace(',', '.');
+            return parseFloat(sanitized) || 0;
+        }
+
+        // Handler untuk format input angka real-time dengan koma desimal & titik ribuan
+        function handleFormattedInput(input, allowDecimal = true) {
+            let val = input.value;
+            if (allowDecimal) {
+                val = val.replace(/[^0-9,]/g, '');
+                const parts = val.split(',');
+                if (parts.length > 2) val = parts[0] + ',' + parts.slice(1).join('');
+            } else {
+                val = val.replace(/[^0-9]/g, '');
+            }
+
+            if (!val) {
+                input.value = '';
+                return;
+            }
+
+            const splitVal = val.split(',');
+            let integerPart = splitVal[0];
+            if (integerPart) {
+                integerPart = parseInt(integerPart, 10).toLocaleString('id-ID');
+            } else {
+                integerPart = '0';
+            }
+
+            let formatted = integerPart;
+            if (splitVal.length > 1) {
+                formatted += ',' + splitVal[1];
+            }
+
+            input.value = formatted;
+        }
+
+        // Initialize App
+        window.onload = function() {
+            renderHistory();
+        };
+
+        // Tab Switcher
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            document.querySelectorAll('[id$="-btn"]').forEach(btn => {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-slate-500');
+            });
+
+            const activeBtn = document.getElementById(tabId + '-btn');
+            activeBtn.classList.add('tab-active');
+            activeBtn.classList.remove('text-slate-500');
+        }
+
+        // Set Bag Size
+        function setBagSize(size) {
+            currentBagSize = size;
+            document.querySelectorAll('.bag-size-btn').forEach(btn => {
+                const btnSize = parseFloat(btn.getAttribute('data-size'));
+                if (btnSize === size) {
+                    btn.className = "bag-size-btn border-2 border-emerald-600 bg-emerald-50 text-emerald-700 py-2 rounded-lg text-sm font-bold hover:border-emerald-500 transition";
+                } else {
+                    btn.className = "bag-size-btn border border-slate-200 py-2 rounded-lg text-sm font-semibold hover:border-emerald-500 hover:bg-emerald-50 transition";
+                }
+            });
+            calculateBeras();
+        }
+
+        // Quick Add Weight
+        function addWeight(kg) {
+            const input = document.getElementById('totalBeras');
+            let currentVal = parseFormattedNumber(input.value);
+            let newVal = currentVal + kg;
+            
+            input.value = formatNumberId(newVal, 2);
+            calculateBeras();
+        }
+
+        // Main Calculation Tab 1
+        function calculateBeras() {
+            const total = parseFormattedNumber(document.getElementById('totalBeras').value);
+
+            const karungUtuh = Math.floor(total / currentBagSize);
+            const sisaKg = total % currentBagSize;
+            const sisaGram = Math.round(sisaKg * 1000);
+            const berasTerkemas = karungUtuh * currentBagSize;
+
+            document.getElementById('resJumlahKarung').innerHTML = `${formatNumberId(karungUtuh, 0)} <span class="text-sm font-normal">karung</span>`;
+            document.getElementById('resDetailKarung').innerText = `(${formatNumberId(currentBagSize, 0)} kg per karung)`;
+            
+            document.getElementById('resSisaBeras').innerHTML = `${formatNumberId(sisaKg, 2)} <span class="text-sm font-normal text-white">kg</span>`;
+            document.getElementById('resSisaGram').innerText = `(~ ${formatNumberId(sisaGram, 0)} gram)`;
+
+            document.getElementById('resTotalBeras').innerText = `${formatNumberId(total, 2)} kg`;
+            document.getElementById('resBerasTerkemas').innerText = `${formatNumberId(berasTerkemas, 2)} kg`;
+        }
+
+        // Batch Management Functions
+        function togglePasteArea() {
+            const wrapper = document.getElementById('pasteAreaWrapper');
+            const btn = document.getElementById('togglePasteBtn');
+            if (wrapper.classList.contains('hidden')) {
+                wrapper.classList.remove('hidden');
+                btn.innerText = 'Sembunyikan Textarea';
+            } else {
+                wrapper.classList.add('hidden');
+                btn.innerText = 'Tampilkan Textarea';
+            }
+        }
+
+        function addSingleBatchItem() {
+            const input = document.getElementById('singleBatchInput');
+            const val = parseFormattedNumber(input.value);
+            if (val <= 0) {
+                showToast("Masukkan angka timbangan yang valid!");
+                return;
+            }
+
+            batchItems.push(val);
+            input.value = '';
+            renderBatchItems();
+            calculateBatch();
+        }
+
+        function removeBatchItem(index) {
+            batchItems.splice(index, 1);
+            renderBatchItems();
+            calculateBatch();
+        }
+
+        function clearBatchItems() {
+            batchItems = [];
+            document.getElementById('batchInput').value = '';
+            renderBatchItems();
+            calculateBatch();
+        }
+
+        function applyBatchTextarea() {
+            const rawText = document.getElementById('batchInput').value;
+            if (!rawText.trim()) return;
+
+            const tokens = rawText.split(/[\n,\s]+/);
+            let addedCount = 0;
+
+            tokens.forEach(tok => {
+                if (tok.trim()) {
+                    const parsed = parseFormattedNumber(tok.trim());
+                    if (parsed > 0) {
+                        batchItems.push(parsed);
+                        addedCount++;
+                    }
+                }
+            });
+
+            document.getElementById('batchInput').value = '';
+            togglePasteArea();
+            renderBatchItems();
+            calculateBatch();
+            showToast(`${addedCount} item timbangan berhasil diimpor!`);
+        }
+
+        function renderBatchItems() {
+            const container = document.getElementById('batchItemsList');
+            document.getElementById('batchCountBadge').innerText = batchItems.length;
+
+            if (batchItems.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-6">Belum ada item timbangan ditambahkan.</p>`;
+                return;
+            }
+
+            container.innerHTML = batchItems.map((item, idx) => `
+                <div class="flex justify-between items-center bg-white px-3 py-1.5 rounded-lg border border-slate-200 text-xs">
+                    <span class="font-semibold text-slate-500 w-8">#${idx + 1}</span>
+                    <span class="font-bold text-slate-800 text-sm flex-grow">${formatNumberId(item, 2)} kg</span>
+                    <button onclick="removeBatchItem(${idx})" class="text-rose-500 hover:text-rose-700 p-1">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Calculation Tab 4 (Batch Input)
+        function calculateBatch() {
+            const targetBag = parseFloat(document.getElementById('batchUkuranKarung').value) || 25;
+            
+            const totalKg = batchItems.reduce((acc, curr) => acc + curr, 0);
+            const karungUtuh = Math.floor(totalKg / targetBag);
+            const sisaKg = totalKg % targetBag;
+
+            document.getElementById('batchResTotal').innerText = `${formatNumberId(totalKg, 2)} kg`;
+            document.getElementById('batchResKarung').innerText = `${formatNumberId(karungUtuh, 0)} Karung`;
+            document.getElementById('batchResSisa').innerText = `${formatNumberId(sisaKg, 2)} kg (${formatNumberId(Math.round(sisaKg * 1000), 0)}g)`;
+        }
+
+        function sendBatchToMainTab() {
+            const totalKg = batchItems.reduce((acc, curr) => acc + curr, 0);
+            if (totalKg <= 0) {
+                showToast("Belum ada data timbangan batch!");
+                return;
+            }
+
+            document.getElementById('totalBeras').value = formatNumberId(totalKg, 2);
+            const targetBag = parseFloat(document.getElementById('batchUkuranKarung').value) || 25;
+            setBagSize(targetBag);
+
+            switchTab('tab1');
+            calculateBeras();
+            showToast("Hasil Batch ditransfer ke Kalkulator Utama!");
+        }
+
+        // History Management
+        function saveHistoryTab1() {
+            const total = parseFormattedNumber(document.getElementById('totalBeras').value);
+            if (total <= 0) {
+                showToast("Masukkan berat beras terlebih dahulu!");
+                return;
+            }
+
+            const karung = Math.floor(total / currentBagSize);
+            const sisa = (total % currentBagSize);
+
+            const item = {
+                id: Date.now(),
+                date: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                text: `${formatNumberId(total, 2)} kg = ${formatNumberId(karung, 0)} karung (${currentBagSize}kg) + sisa ${formatNumberId(sisa, 2)} kg`
+            };
+
+            historyData.unshift(item);
+            if (historyData.length > 10) historyData.pop();
+
+            localStorage.setItem('hitungberas_history', JSON.stringify(historyData));
+            renderHistory();
+            showToast("Perhitungan disimpan ke riwayat!");
+        }
+
+        function saveHistoryBatch() {
+            const totalKg = batchItems.reduce((acc, curr) => acc + curr, 0);
+            const targetBag = parseFloat(document.getElementById('batchUkuranKarung').value) || 25;
+
+            if (totalKg <= 0) {
+                showToast("Data timbangan batch belum diisi!");
+                return;
+            }
+
+            const karung = Math.floor(totalKg / targetBag);
+            const sisa = totalKg % targetBag;
+
+            const item = {
+                id: Date.now(),
+                date: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+                text: `[Batch ${batchItems.length} Timbangan] Total ${formatNumberId(totalKg, 2)} kg = ${formatNumberId(karung, 0)} karung (${targetBag}kg) + sisa ${formatNumberId(sisa, 2)} kg`
+            };
+
+            historyData.unshift(item);
+            if (historyData.length > 10) historyData.pop();
+
+            localStorage.setItem('hitungberas_history', JSON.stringify(historyData));
+            renderHistory();
+            showToast("Hasil Batch disimpan ke riwayat!");
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (historyData.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-xs italic text-center py-4">Belum ada riwayat tersimpan.</p>`;
+                return;
+            }
+
+            container.innerHTML = historyData.map(item => `
+                <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200/80 hover:bg-slate-100 transition">
+                    <span class="text-slate-700 font-medium text-xs sm:text-sm">${item.text}</span>
+                    <span class="text-xs text-slate-400 ml-2 whitespace-nowrap">${item.date}</span>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            historyData = [];
+            localStorage.removeItem('hitungberas_history');
+            renderHistory();
+            showToast("Riwayat dibersihkan");
+        }
+
+        function resetCurrentTab() {
+            document.getElementById('totalBeras').value = '';
+            document.getElementById('singleBatchInput').value = '';
+            document.getElementById('batchInput').value = '';
+            batchItems = [];
+            
+            renderBatchItems();
+            calculateBeras();
+            calculateBatch();
+            showToast("Form di-reset");
+        }
+
+        // Notification Toast
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
+```
